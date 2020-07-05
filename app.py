@@ -13,18 +13,20 @@ RESPONSES_KEY = "responses"
 
 @app.route("/")
 def show_home():
+    """Renders the home template"""
     return render_template('home.html', title=survey.title, instructions=survey.instructions)
 
 
 @app.route("/start")
 def start_survey():
+    """Clears the session cookies of data to start fresh and redirects to the first question"""
     session[RESPONSES_KEY] = []
     return redirect("/questions/0")
 
 
 @app.route("/questions/<int:qid>")
 def show_questions(qid):
-    """Renders the questions for the survey"""
+    """Checks for completion/question skipping, and renders the questions for the survey"""
     res = session.get(RESPONSES_KEY)
     if (res is None):
         return redirect('/')
@@ -42,6 +44,7 @@ def show_questions(qid):
 
 @app.route("/answer", methods=["POST"])
 def handle_answers():
+    """Checks for completion, adds data to the session cookies and redirects to next question"""
     answer = request.form["answer"]
 
     res = session[RESPONSES_KEY]
@@ -55,4 +58,5 @@ def handle_answers():
 
 @app.route("/finish")
 def finish_survey():
+    """Renders thank you page"""
     return render_template('thanks.html')
